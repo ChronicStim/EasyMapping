@@ -20,8 +20,16 @@
 #import "NativeChild.h"
 #import "Cat.h"
 #import "CommentObject.h"
+#import "Dog.h"
+#import "Wolf.h"
 
 @implementation MappingProvider
+
++(NSDateFormatter *)iso8601DateFormatter {
+    NSDateFormatter * formatter = [NSDateFormatter new];
+    formatter.dateFormat = EKISO_8601DateTimeFormat;
+    return formatter;
+}
 
 + (EKObjectMapping *)carMapping
 {
@@ -63,7 +71,7 @@
 {
     return [EKObjectMapping mappingForClass:[Car class] withBlock:^(EKObjectMapping *mapping) {
         [mapping mapPropertiesFromArray:@[@"model", @"year"]];
-        [mapping mapKeyPath:@"created_at" toProperty:@"createdAt" withDateFormatter:[NSDateFormatter ek_formatterForCurrentThread]];
+        [mapping mapKeyPath:@"created_at" toProperty:@"createdAt" withDateFormatter:[self iso8601DateFormatter]];
     }];
 }
 
@@ -194,6 +202,20 @@
     return [EKObjectMapping mappingForClass:[Cat class] withBlock:^(EKObjectMapping *mapping) {
         [mapping mapPropertiesFromArray:@[ @"age" ]];
     }];
+}
+
++(EKObjectMapping *)personWithPetsMapping
+{
+    EKObjectMapping * mapping = [self personMapping];
+    EKRelationshipMapping * relationship = [mapping hasMany:Dog.class forKeyPath:@"animals" forProperty:@"pets"];
+    relationship.mappingResolver = ^EKObjectMapping *(id representation){
+        if ([representation[@"type"] isEqualToString:@"dog"]) {
+            return [Dog objectMapping];
+        } else {
+            return [Wolf objectMapping];
+        }
+    };
+    return mapping;
 }
 
 @end
