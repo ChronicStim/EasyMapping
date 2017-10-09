@@ -71,21 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
                                        fromContext:(NSManagedObjectContext *)context;
 
 /**
- Convert CoreData managed objects to JSON representation. Uses the mappingResolver and serializationResolver within the EKRelationshipMapping definition for the unique objects in the collection to correctly choose the right map.
- 
- @param collection objects to convert.
- 
- @param relationship relationship mapping.
- 
- @param context NSManagedObjectContext objects are in. If you don't use context lookups in reverse blocks, you can simply pass nil.
- 
- @result parsed JSON in a form of NSArray.
- */
-+ (NSArray <NSDictionary <NSString *, id> *> *)serializeCollection:(NSArray *)collection
-                                                       withRelationship:(EKRelationshipMapping *)relationship
-                                                       fromContext:(NSManagedObjectContext *)context;
-
-/**
  Convert CoreData managed objects to JSON representation.
  
  @param collection objects to convert.

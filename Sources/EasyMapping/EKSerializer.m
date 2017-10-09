@@ -61,7 +61,7 @@
         id hasManyObject = [object valueForKey:relationship.property];
         if (hasManyObject) {
             NSArray *hasManyRepresentation = [self serializeCollection:hasManyObject
-                                                           withMapping:[relationship mappingForObject:hasManyObject]];
+                                                           withMapping:[[relationship objectClass] objectMapping]];
             [representation setObject:hasManyRepresentation forKey:relationship.keyPath];
         }
     }
@@ -123,7 +123,7 @@
         id hasManyObject = [object valueForKey:relationship.property];
         if (hasManyObject) {
             NSArray *hasManyRepresentation = [self serializeCollection:hasManyObject
-                                                           withRelationship:relationship
+                                                           withMapping:(EKManagedObjectMapping *)[[relationship objectClass] objectMapping]
                                                            fromContext:context];
             [representation setObject:hasManyRepresentation forKey:relationship.keyPath];
         }
@@ -135,19 +135,6 @@
         representation = rootRepresentation;
     }
     return representation;
-}
-
-+(NSArray *)serializeCollection:(NSArray<id<EKManagedMappingProtocol>> *)collection withRelationship:(EKRelationshipMapping *)relationship fromContext:(NSManagedObjectContext *)context
-{
-    NSMutableArray *array = [NSMutableArray array];
-    
-    for (id<EKManagedMappingProtocol> object in collection) {
-        EKManagedObjectMapping *mapping = (EKManagedObjectMapping *)[relationship mappingForObject:object];
-        NSDictionary *objectRepresentation = [self serializeObject:object withMapping:mapping fromContext:context];
-        [array addObject:objectRepresentation];
-    }
-    
-    return [NSArray arrayWithArray:array];
 }
 
 +(NSArray *)serializeCollection:(NSArray<id<EKManagedMappingProtocol>> *)collection withMapping:(EKManagedObjectMapping *)mapping fromContext:(NSManagedObjectContext *)context
