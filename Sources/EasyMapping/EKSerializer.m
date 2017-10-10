@@ -61,7 +61,7 @@
         id hasManyObject = [object valueForKey:relationship.property];
         if (hasManyObject) {
             NSArray *hasManyRepresentation = [self serializeCollection:hasManyObject
-                                                           withMapping:[[relationship objectClass] objectMapping]];
+                                                           withRelationship:relationship];
             [representation setObject:hasManyRepresentation forKey:relationship.keyPath];
         }
     }
@@ -79,6 +79,19 @@
     NSMutableArray *array = [NSMutableArray array];
     
     for (id<EKMappingProtocol> object in collection) {
+        NSDictionary *objectRepresentation = [self serializeObject:object withMapping:mapping];
+        [array addObject:objectRepresentation];
+    }
+    
+    return [NSArray arrayWithArray:array];
+}
+
++ (NSArray *)serializeCollection:(NSArray<id<EKMappingProtocol>> *)collection withRelationship:(EKRelationshipMapping *)relationship;
+{
+    NSMutableArray *array = [NSMutableArray array];
+    
+    for (id<EKMappingProtocol> object in collection) {
+        EKObjectMapping *mapping = (EKObjectMapping *)[relationship mappingForObject:object];
         NSDictionary *objectRepresentation = [self serializeObject:object withMapping:mapping];
         [array addObject:objectRepresentation];
     }
@@ -123,7 +136,7 @@
         id hasManyObject = [object valueForKey:relationship.property];
         if (hasManyObject) {
             NSArray *hasManyRepresentation = [self serializeCollection:hasManyObject
-                                                           withMapping:(EKManagedObjectMapping *)[[relationship objectClass] objectMapping]
+                                                           withRelationship:relationship
                                                            fromContext:context];
             [representation setObject:hasManyRepresentation forKey:relationship.keyPath];
         }
@@ -142,6 +155,19 @@
     NSMutableArray *array = [NSMutableArray array];
     
     for (id<EKManagedMappingProtocol> object in collection) {
+        NSDictionary *objectRepresentation = [self serializeObject:object withMapping:mapping fromContext:context];
+        [array addObject:objectRepresentation];
+    }
+    
+    return [NSArray arrayWithArray:array];
+}
+
++(NSArray *)serializeCollection:(NSArray<id<EKManagedMappingProtocol>> *)collection withRelationship:relationship fromContext:(NSManagedObjectContext *)context
+{
+    NSMutableArray *array = [NSMutableArray array];
+    
+    for (id<EKManagedMappingProtocol> object in collection) {
+        EKManagedObjectMapping *mapping = (EKManagedObjectMapping *)[relationship mappingForObject:object];
         NSDictionary *objectRepresentation = [self serializeObject:object withMapping:mapping fromContext:context];
         [array addObject:objectRepresentation];
     }
